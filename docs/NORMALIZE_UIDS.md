@@ -6,16 +6,16 @@ Este documento acompaña el script `scripts/normalize_evidence_uids.py`. El obje
 
 Modo de uso
 -----------
-- Dry-run (por defecto): lista los nodos `Evidence` que no tienen `uid` y muestra el `uid` propuesto sin modificar la BD.
+- Dry-run (por defecto): lista los nodos `Evidence` que no tienen `uid` y muestra el `uid` propuesto sin modificar la BD. Puedes exportar el listado con `--export-csv`.
 
   ```bash
-  python scripts/normalize_evidence_uids.py
+  python scripts/normalize_evidence_uids.py --export-csv /tmp/proposed_uids.csv
   ```
 
 - Aplicar cambios: ejecuta con `--apply` y confirma escribiendo `YES` cuando se te pida.
 
   ```bash
-  python scripts/normalize_evidence_uids.py --apply
+  python scripts/normalize_evidence_uids.py --apply --export-csv /tmp/proposed_uids.csv
   ```
 
 Garantías y seguridad

@@ -2,6 +2,16 @@ from datetime import date, datetime
 import math
 from typing import List, Optional, Union
 import json
+import hashlib
+
+# Configuration (tunable, transparent)
+# - MAX_SATURATION: number of evidences at which frequency saturates
+# - FREQ_WEIGHT / RECENCY_WEIGHT: how to combine frequency vs recency
+# - DEFAULT_RECENCY_SCORE: conservative fallback when date unknown
+MAX_SATURATION = 10
+FREQ_WEIGHT = 0.6
+RECENCY_WEIGHT = 0.4
+DEFAULT_RECENCY_SCORE = 0.2
 
 
 def _parse_evidence_date(ev) -> Optional[str]:
@@ -47,6 +57,20 @@ def _days_since(d: Optional[str]) -> Optional[int]:
     except Exception:
         return None
 
+
+def _compute_freq_score(n: int) -> float:
+    """Frequency score normalized between 0 and 1; saturates at MAX_SATURATION."""
+    if n <= 0:
+        return 0.0
+    return min(1.0, math.log(1 + n) / math.log(1 + MAX_SATURATION))
+
+
+def _compute_recency_score(days: Optional[int]) -> float:
+    """Recency score between 0 and 1 given days since last evidence."""
+    if days is None:
+        return DEFAULT_RECENCY_SCORE
+    return max(0.0, 1.0 - (days / 365.0))
+
 def compute_skill_level_from_relation(evidences: Optional[List[Union[str, dict]]], ultima: Optional[str]) -> float:
     """
     Compute a level in range [1.0, 5.0] from evidences list and last demonstration date.
@@ -61,7 +85,7 @@ def compute_skill_level_from_relation(evidences: Optional[List[Union[str, dict]]
     """
     # Support evidences as list of strings (legacy) or list of objects with dates
     n = len(evidences) if evidences else 0
-    freq_score = math.log(1 + n) / math.log(1 + 10) if n > 0 else 0.0
+    freq_score = _compute_freq_score(n)
 
     # If ultima not provided, try to infer latest date from evidence objects
     inferred_ultima = None
@@ -75,16 +99,23 @@ def compute_skill_level_from_relation(evidences: Optional[List[Union[str, dict]]
             inferred_ultima = max(dates)
 
     days = _days_since(ultima or inferred_ultima)
-    if days is None:
-        recency_score = 0.2  # conservative when unknown
-    else:
-        recency_score = max(0.0, 1.0 - (days / 365.0))
+    recency_score = _compute_recency_score(days)
 
-    combine = 0.6 * freq_score + 0.4 * recency_score
+    combine = FREQ_WEIGHT * freq_score + RECENCY_WEIGHT * recency_score
     level = 1.0 + 4.0 * combine
     # clamp
     level = max(1.0, min(5.0, level))
     return round(level, 2)
+
+
+def make_evidence_uid(url: Optional[str], date_str: Optional[str], actor: Optional[str]) -> str:
+    """Deterministic uid for an evidence based on url+date+actor (used for normalization).
+
+    Returns a hex sha1 string prefixed with 'evidence-'.
+    """
+    base = f"{url or ''}|{date_str or ''}|{actor or ''}"
+    h = hashlib.sha1(base.encode('utf-8')).hexdigest()
+    return f"evidence-{h}"
 
 
 def recompute_all_skill_levels(driver):
