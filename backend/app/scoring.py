@@ -1,7 +1,8 @@
-from datetime import date, datetime
+from datetime import date
+import hashlib
+import json
 import math
 from typing import List, Optional, Union
-import json
 
 
 def _parse_evidence_date(ev) -> Optional[str]:
@@ -47,6 +48,29 @@ def _days_since(d: Optional[str]) -> Optional[int]:
     except Exception:
         return None
 
+def _compute_freq_score(count: int) -> float:
+    """Log-based saturation so that >10 evidences quickly approach max contribution."""
+    if count <= 0:
+        return 0.0
+    score = math.log(1 + count) / math.log(1 + 10)
+    return min(1.0, score)
+
+
+def _compute_recency_score(days_since: Optional[int]) -> float:
+    """Map recency into [0,1]; fall back to conservative default when unknown."""
+    if days_since is None:
+        return 0.2
+    return max(0.0, 1.0 - (days_since / 365.0))
+
+
+def make_evidence_uid(url: Optional[str], when: Optional[str], actor: Optional[str]) -> str:
+    """Generate deterministic uid `evidence-{sha1(url|date|actor)}`; tolerate missing fields."""
+    parts = [url or '', when or '', actor or '']
+    payload = '|'.join(parts)
+    digest = hashlib.sha1(payload.encode('utf-8')).hexdigest()
+    return f"evidence-{digest}"
+
+
 def compute_skill_level_from_relation(evidences: Optional[List[Union[str, dict]]], ultima: Optional[str]) -> float:
     """
     Compute a level in range [1.0, 5.0] from evidences list and last demonstration date.
@@ -61,7 +85,7 @@ def compute_skill_level_from_relation(evidences: Optional[List[Union[str, dict]]
     """
     # Support evidences as list of strings (legacy) or list of objects with dates
     n = len(evidences) if evidences else 0
-    freq_score = math.log(1 + n) / math.log(1 + 10) if n > 0 else 0.0
+    freq_score = _compute_freq_score(n)
 
     # If ultima not provided, try to infer latest date from evidence objects
     inferred_ultima = None
@@ -75,10 +99,7 @@ def compute_skill_level_from_relation(evidences: Optional[List[Union[str, dict]]
             inferred_ultima = max(dates)
 
     days = _days_since(ultima or inferred_ultima)
-    if days is None:
-        recency_score = 0.2  # conservative when unknown
-    else:
-        recency_score = max(0.0, 1.0 - (days / 365.0))
+    recency_score = _compute_recency_score(days)
 
     combine = 0.6 * freq_score + 0.4 * recency_score
     level = 1.0 + 4.0 * combine
