@@ -36,6 +36,26 @@ services:
       - VITE_API_URL=http://backend:8000
     command: npm run dev -- --host 0.0.0.0
 
+  ingest-runner:
+    build: ./backend
+    command: python -m app.ingestors.run --sources github,jira
+    depends_on:
+      - neo4j
+    environment:
+      - NEO4J_URI=bolt://neo4j:7687
+      - NEO4J_USER=neo4j
+      - NEO4J_PASS=neo4jpasswd
+      - GITHUB_REPOS=${GITHUB_REPOS:-}
+      - GITHUB_TOKEN=${GITHUB_TOKEN:-}
+      - GITHUB_LOOKBACK_HOURS=${GITHUB_LOOKBACK_HOURS:-}
+      - GITHUB_MAX_COMMITS=${GITHUB_MAX_COMMITS:-20}
+      - JIRA_BASE=${JIRA_BASE:-}
+      - JIRA_USER=${JIRA_USER:-}
+      - JIRA_TOKEN=${JIRA_TOKEN:-}
+      - JIRA_JQL=${JIRA_JQL:-}
+    profiles:
+      - ingest
+
 
 
 volumes:

@@ -22,6 +22,7 @@ def ingest_closed_issues(jql='project = PROJ AND status = Done'):
     issues = data.get('issues', [])
 
     driver = get_driver()
+    processed_issues = 0
 
     for iss in issues:
         key = iss['key']
@@ -32,6 +33,7 @@ def ingest_closed_issues(jql='project = PROJ AND status = Done'):
 
         # Map labels to skills
         updated_emps = set()
+        issue_had_skill = False
         for label in labels:
             eid = assignee or reporter
             if not eid:
@@ -74,9 +76,14 @@ def ingest_closed_issues(jql='project = PROJ AND status = Done'):
                     skill=label,
                 )
                 updated_emps.add(eid)
+                issue_had_skill = True
         # recompute levels for affected employees
         if updated_emps:
             try:
                 recompute_skill_levels_for_employees(get_driver(), list(updated_emps))
             except Exception as e:
                 print('warning: recompute_skill_levels_for_employees failed for', updated_emps, e)
+        if issue_had_skill:
+            processed_issues += 1
+
+    return processed_issues

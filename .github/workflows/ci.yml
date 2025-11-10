@@ -1,0 +1,33 @@
+name: CI - pytest in backend container
+
+on:
+  push:
+    branches: [ main, 'evidence/*' ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Compose services
+        run: |
+          docker-compose up -d --build neo4j backend
+
+      - name: Wait for services to warm up
+        run: |
+          # wait a bit for neo4j and backend to bootstrap
+          sleep 15
+
+      - name: Run pytest inside backend container
+        run: |
+          # Run pytest inside the backend container without TTY
+          docker-compose exec -T backend pytest -q
+
+      - name: Tear down
+        if: always()
+        run: |
+          docker-compose down -v
