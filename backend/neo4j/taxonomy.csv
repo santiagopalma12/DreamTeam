@@ -1,0 +1,11 @@
+family,skill,alias
+Backend,Python,py
+Backend,Java,java
+Backend,Go,golang
+Frontend,React,reactjs
+Frontend,TypeScript,ts
+DevOps,Docker,dockerfile
+DevOps,Kubernetes,k8s
+Data,Neo4j,graphdb
+Methodology,Agile,scrum
+Methodology,Jira,jira
