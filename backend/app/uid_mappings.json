@@ -1,0 +1,17 @@
+{
+    "github_to_email": {
+        "jperez": "juan.perez@company.com",
+        "mgarcia": "maria.garcia@company.com",
+        "alopez": "ana.lopez@company.com"
+    },
+    "slack_to_email": {
+        "U12345": "juan.perez@company.com",
+        "U67890": "maria.garcia@company.com",
+        "U11111": "ana.lopez@company.com"
+    },
+    "jira_username_to_email": {
+        "jperez": "juan.perez@company.com",
+        "mgarcia": "maria.garcia@company.com",
+        "alopez": "ana.lopez@company.com"
+    }
+}
