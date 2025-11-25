@@ -1,0 +1,269 @@
+{
+    "info": {
+        "name": "Project Chimera API",
+        "description": "Smart Team Assembly Engine - API Collection",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        "_postman_id": "chimera-api-v1",
+        "version": "1.0.0"
+    },
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "http://localhost:8000",
+            "type": "string"
+        }
+    ],
+    "item": [
+        {
+            "name": "Guardian Endpoints",
+            "item": [
+                {
+                    "name": "Get Team Recommendations",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"requisitos_hard\": {\n    \"skills\": [\"Python\", \"Docker\", \"Kubernetes\"]\n  },\n  \"k\": 5,\n  \"mission_profile\": \"entrega_rapida\",\n  \"week\": \"2025-W01\",\n  \"min_hours\": 25\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/recommend",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "recommend"
+                            ]
+                        },
+                        "description": "Generate team dossiers based on requirements and mission profile"
+                    }
+                },
+                {
+                    "name": "Get Team Recommendations (Maintenance)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"requisitos_hard\": {\n    \"skills\": [\"Python\", \"FastAPI\"]\n  },\n  \"k\": 5,\n  \"mission_profile\": \"mantenimiento\",\n  \"week\": \"2025-W01\",\n  \"min_hours\": 30\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/recommend",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "recommend"
+                            ]
+                        },
+                        "description": "Example with maintenance mission profile (stability focus)"
+                    }
+                },
+                {
+                    "name": "Get Team Recommendations (Innovation)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"requisitos_hard\": {\n    \"skills\": [\"React\", \"TypeScript\"]\n  },\n  \"k\": 5,\n  \"mission_profile\": \"innovacion\",\n  \"week\": \"2025-W02\",\n  \"min_hours\": 20\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/recommend",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "recommend"
+                            ]
+                        },
+                        "description": "Example with innovation mission profile (experimentation focus)"
+                    }
+                },
+                {
+                    "name": "Get Team with Overrides",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"requisitos_hard\": {\n    \"skills\": [\"Python\"]\n  },\n  \"k\": 5,\n  \"mission_profile\": \"entrega_rapida\",\n  \"force_include\": [\"emp_abc123\"],\n  \"force_exclude\": [\"emp_xyz789\"]\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/recommend",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "recommend"
+                            ]
+                        },
+                        "description": "Example with force_include and force_exclude overrides"
+                    }
+                },
+                {
+                    "name": "Get Linchpin Employees",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/linchpins",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "linchpins"
+                            ]
+                        },
+                        "description": "Get list of critical employees (Bus Factor risk)"
+                    }
+                },
+                {
+                    "name": "Get Mission Profiles",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/mission-profiles",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "mission-profiles"
+                            ]
+                        },
+                        "description": "Get available mission profiles (maintenance, innovation, fast delivery)"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Admin Endpoints",
+            "item": [
+                {
+                    "name": "Recompute Skills",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/admin/recompute-skills",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "recompute-skills"
+                            ]
+                        },
+                        "description": "Recalculate skill levels for all employees (can be slow)"
+                    }
+                },
+                {
+                    "name": "Normalize UIDs",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/admin/normalize",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "normalize"
+                            ]
+                        },
+                        "description": "Re-normalize all employee UIDs (destructive operation)"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Query Endpoints",
+            "item": [
+                {
+                    "name": "Get All Employees",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/employees",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "employees"
+                            ]
+                        },
+                        "description": "List all employees in the system"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Health Check",
+            "item": [
+                {
+                    "name": "Root Endpoint",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                ""
+                            ]
+                        },
+                        "description": "Health check endpoint"
+                    }
+                },
+                {
+                    "name": "API Docs (Swagger)",
+                    "request": {t
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/docs",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "docs"
+                            ]
+                        },
+                        "description": "Interactive API documentation (Swagger UI)"
+                    }
+                }
+            ]
+        }
+    ]
+}

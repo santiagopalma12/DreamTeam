@@ -1,0 +1,25 @@
+default:
+  weights:
+    base_skill: 1.0
+    nivel: 0.4
+    frequency: 0.25
+    recency: -0.01
+    validation: 0.5
+  thresholds:
+    min_frequency: 1
+    max_recency_days: 120
+    min_validated_ratio: 0.3
+missions:
+  investigacion:
+    weights:
+      frequency: 0.35
+      recency: -0.015
+    thresholds:
+      min_frequency: 2
+      max_recency_days: 90
+  entrega_rapida:
+    weights:
+      frequency: 0.2
+      recency: -0.02
+    thresholds:
+      max_recency_days: 45
