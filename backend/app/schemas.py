@@ -1,18 +1,17 @@
-"""
-Pydantic schemas for API requests and responses.
-Phase 1: Basic schemas for employees and skills.
-"""
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import List, Optional, Dict
 
 
-class EmployeeResponse(BaseModel):
-    """Employee information response."""
-    id: str
-    nombre: Optional[str] = None
-    rol: Optional[str] = None
+class IngestEvidence(BaseModel):
+    empleado_id: str
+    skill: str
+    evidence_url: str
+    evidence_type: Optional[str] = None
+    date: Optional[str] = None
 
 
-class EmployeeListResponse(BaseModel):
-    """List of employees response."""
-    employees: List[EmployeeResponse]
+class TeamRequest(BaseModel):
+    requisitos_hard: Dict
+    perfil_mision: str
+    k: int
+    preferences: Optional[Dict] = {}
